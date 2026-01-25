@@ -1,38 +1,71 @@
-@font-face {
-    font-family: 'headerfont'; /* A name to be used later */
-    src: url('headerfont.otf'); /* URL to font */
+{
+border-radius: 30px;
+border: 1px solid #fff;
+color: #fff;
+text-decoration: none;
+transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-html, body {
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden; /* Prevent horizontal scrolling */
-    background-color: #1f1e1d;
+
+.button:hover {
+transform: translateY(-3px);
+box-shadow: 0 0 25px rgba(255,255,255,0.3);
 }
 
-#mainheader a {
-    color: orange; /* Change the text color to orange */
-    text-decoration: none; /* Remove the underline */
-    font-size: 1.5em; /* Adjusted font size */
-    display: block; /* Make the anchor a block element to center it */
-    margin: 0 auto; /* Center the anchor */
-    position: relative;
-    top: 48px; /* Adjust this value to move closer to the h2 */
-    font-family: 'headerfont'; /* Apply the custom font */
-    left: 43%;
+
+.glow {
+animation: glowPulse 2.5s infinite ease-in-out;
 }
 
-#mainheader img {
-    position: absolute;
-    left: 50%; /* Use 'left' to move it to the right from the left side */
-    transform: translateX(-50%); /* Center the image */
+
+.cards {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+gap: 2rem;
+padding: 4rem 2rem;
 }
-.sidebar {
-  border-radius: 10px;
-  padding: 15px;
-  height: 750px;
-  width: 170px;
-  background-color: #333130;
-  position: relative;
-  top: 0px;
+
+
+.card {
+background: rgba(255,255,255,0.05);
+border: 1px solid rgba(255,255,255,0.08);
+padding: 2.5rem;
+text-align: center;
+border-radius: 16px;
+backdrop-filter: blur(8px);
+transition: transform 0.3s ease;
+}
+
+
+.card:hover {
+transform: translateY(-8px);
+}
+
+
+footer {
+text-align: center;
+padding: 2rem;
+color: #777;
+font-size: 0.9rem;
+}
+
+
+/* Scroll Reveal */
+.reveal {
+opacity: 0;
+transform: translateY(40px);
+transition: all 1s ease;
+}
+
+
+.reveal.active {
+opacity: 1;
+transform: translateY(0);
+}
+
+
+/* Animations */
+@keyframes glowPulse {
+0%, 100% { box-shadow: 0 0 15px rgba(255,255,255,0.2); }
+50% { box-shadow: 0 0 35px rgba(255,255,255,0.5); }
 }
