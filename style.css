@@ -4,6 +4,12 @@ padding: 0;
 box-sizing: border-box;
 }
 
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+  margin-top: 4rem;
+}
 
 body {
 background: radial-gradient(circle at top, #111, #000);
