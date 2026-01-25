@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Modern Black Website</title>
-<link rel="stylesheet" href="style.css"/>
+<link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
@@ -13,7 +13,7 @@
 <div class="cursor"></div>
 
 
-<header class="fade-down">
+<header class="container">
 <h1>BLACKSITE</h1>
 <nav>
 <a href="#">Home</a>
@@ -23,25 +23,27 @@
 </header>
 
 
+<main>
 <section class="hero">
 <div class="hero-content reveal">
 <h2>Modern. Dark. Animated.</h2>
 <p>
-A sleek black website with cursor glow and scroll-triggered animations.
+A clean, centered layout with smooth motion and better spacing.
 </p>
 <a href="#" class="button glow">Get Started</a>
 </div>
 </section>
 
 
-<section class="cards">
+<section class="cards container">
 <div class="card reveal">Fast</div>
 <div class="card reveal">Clean</div>
 <div class="card reveal">Minimal</div>
 </section>
+</main>
 
 
-<footer class="reveal">
+<footer class="container reveal">
 © 2026 Black Website Design
 </footer>
 
@@ -56,9 +58,6 @@ cursor.style.top = e.clientY + 'px';
 
 
 // Scroll Reveal
-const reveals = document.querySelectorAll('.reveal');
-
-
 const observer = new IntersectionObserver(entries => {
 entries.forEach(entry => {
 if (entry.isIntersecting) {
@@ -68,7 +67,7 @@ entry.target.classList.add('active');
 }, { threshold: 0.15 });
 
 
-reveals.forEach(r => observer.observe(r));
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 </script>
 
 
