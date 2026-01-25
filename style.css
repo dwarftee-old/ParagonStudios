@@ -19,6 +19,10 @@ line-height: 1.6;
 overflow-x: hidden;
 }
 
+.button {
+  background: transparent;
+  font-weight: 500;
+}
 
 /* Layout */
 .container {
