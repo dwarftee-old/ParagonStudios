@@ -1,75 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Home</title>
-<link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlackSite | Modern Dark Design</title>
+    <style>
+        /* 1. Global Styles & Reset */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0a0a0a; /* Deep matte black */
+            color: #ffffff;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* 2. Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 10%;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .nav-links a {
+            color: #888;
+            text-decoration: none;
+            margin-left: 20px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+        }
+
+        /* 3. Hero Section (Centered Layout) */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            animation: fadeIn 1.2s ease-out;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+        }
+
+        p {
+            color: #a0a0a0;
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin-bottom: 2.5rem;
+        }
+
+        /* 4. The "Get Started" Button */
+        .btn {
+            background-color: #ffffff;
+            color: #000;
+            padding: 15px 35px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #e0e0e0;
+            transform: translateY(-3px);
+        }
+
+        /* 5. Features Grid */
+        .features {
+            display: flex;
+            gap: 100px;
+            margin-top: 4rem;
+            border-top: 1px solid #222;
+            padding-top: 2rem;
+        }
+
+        .feature-item {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* 6. Footer */
+        footer {
+            padding: 2rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #444;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body>
 
+    <nav>
+        <div class="logo">BLACKSITE</div>
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+        </div>
+    </nav>
 
-<!-- Cursor Glow -->
-<div class="cursor"></div>
+    <main>
+        <h1>Modern. Dark. Animated.</h1>
+        <p>A clean, centered layout with smooth motion and better spacing designed for high-impact presence.</p>
+        <a href="#" class="btn">Get Started</a>
 
+        <div class="features">
+            <div class="feature-item">Fast</div>
+            <div class="feature-item">Clean</div>
+            <div class="feature-item">Minimal</div>
+        </div>
+    </main>
 
-<header class="container">
-<h1>Paragon Studios</h1>
-<nav>
-<a href="#">Home</a>
-<a href="#">About</a>
-<a href="#">Contact</a>
-</nav>
-</header>
-
-
-<main>
-<section class="hero">
-<div class="hero-content reveal">
-<h2>Modern. Dark. Animated.</h2>
-<p>
-A clean, centered layout with smooth motion and better spacing.
-</p>
-<a href="#" class="button glow">Get Started</a>
-</div>
-</section>
-
-
-<section class="cards container">
-  <div class="card reveal">Fast</div>
-  <div class="card reveal">Clean</div>
-  <div class="card reveal">Minimal</div>
-</section>
-</main>
-
-
-<footer class="container reveal">
-© 2026 Black Website Design
-</footer>
-
-
-<script>
-// Cursor Glow
-const cursor = document.querySelector('.cursor');
-document.addEventListener('mousemove', e => {
-cursor.style.left = e.clientX + 'px';
-cursor.style.top = e.clientY + 'px';
-});
-
-
-// Scroll Reveal
-const observer = new IntersectionObserver(entries => {
-entries.forEach(entry => {
-if (entry.isIntersecting) {
-entry.target.classList.add('active');
-}
-});
-}, { threshold: 0.15 });
-
-
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-</script>
-
+    <footer>
+        © 2026 Black Website Design
+    </footer>
 
 </body>
 </html>
