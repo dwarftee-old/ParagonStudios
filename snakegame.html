@@ -3,60 +3,51 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Snake Game - Grid Aligned</title>
+    <title>Snake Game - FireRite Studios</title>
     <style>
         body {
             background-color: #1a1a1a;
             color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
+            height: 100vh;
             margin: 0;
         }
 
-        h3 {
-            color: lime;
-            font-size: 50px;
-            margin-bottom: 10px;
-            text-shadow: 3px 3px 0px #000;
-        }
-
-        /* The Game Board Container */
+        /* The Box holding the game */
         .game-container {
             position: relative;
             width: 400px;
             height: 400px;
-            border: 4px solid #444;
-            /* This creates the 2D grass grid perfectly aligned to 20px tiles */
-            background-color: #2d5a27; /* Dark grass base */
-            background-image: 
-                linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
-            background-size: 20px 20px; /* Matches tileSize */
+            border: 5px solid #444;
+            /* WE ARE LOADING A WEB IMAGE TO ENSURE IT WORKS IMMEDIATELY */
+            background-image: url('https://img.freepik.com/free-vector/pixel-art-grass-background_52683-122703.jpg');
+            background-size: 40px 40px; /* Aligned to 20px grid (2x2 tiles) */
+            background-repeat: repeat;
+            image-rendering: pixelated; /* Keeps the grass looking sharp */
         }
 
+        /* Essential: The canvas MUST be transparent to see the image */
         canvas {
             display: block;
-            background-color: transparent; /* Allows CSS grid to show through */
+            background-color: transparent !important; 
         }
 
         .ui-panel {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
-        #game-status { font-weight: bold; color: lime; }
-        #game-score { font-size: 24px; color: yellow; }
-        
-        .footer { margin-top: 30px; opacity: 0.6; font-size: 12px; }
+        #game-status { color: lime; font-weight: bold; font-size: 20px; }
+        #game-score { color: yellow; font-size: 24px; }
     </style>
 </head>
 <body>
 
-    <h3>SNAKE GAME</h3>
+    <h3 style="color:lime; font-size: 40px; margin: 10px;">SNAKE GAME</h3>
 
     <div class="game-container">
         <canvas id="canvas" width="400" height="400"></canvas>
@@ -65,20 +56,14 @@
     <div class="ui-panel">
         <div id="game-status">Press SPACE to Start</div>
         <div id="game-score">Score: 0</div>
-        <p><small>WASD to Move | Space to Pause</small></p>
+        <p>Use <b>WASD</b> to move</p>
     </div>
-
-    <div class="footer">FireRite Studios © | frogdev 1.2</div>
 
     <script>
         var canvas, ctx, gameControl, gameActive = false;
         var speed = 10;
         
-        const SNAKE_COLOUR = '#32CD32'; // LimeGreen
-        const APPLE_COLOUR = '#FF4500'; // OrangeRed
-
-        var gridSize = 20; 
-        var tileSize = 20; 
+        var gridSize = 20, tileSize = 20; 
         var nextX = 0, nextY = 0;
         var tailSize = 3, snakeTrail = [];
         var snakeX = 10, snakeY = 10;
@@ -88,26 +73,19 @@
             canvas = document.getElementById("canvas");
             ctx = canvas.getContext("2d");
             document.addEventListener("keydown", keyDownEvent);
-            draw(); // Initial draw to show the apple
+            // Draw once to show apple on top of background
+            draw(); 
         };
-
-        function startGame() {
-            gameActive = true;
-            document.getElementById("game-status").innerText = "RUNNING";
-            return setInterval(draw, 1000 / speed);
-        }
 
         function draw() {
             snakeX += nextX;
             snakeY += nextY;
 
-            // Wrap snake position
             if (snakeX < 0) snakeX = gridSize - 1;
             if (snakeX > gridSize - 1) snakeX = 0;
             if (snakeY < 0) snakeY = gridSize - 1;
             if (snakeY > gridSize - 1) snakeY = 0;
 
-            // Apple collision
             if (snakeX == appleX && snakeY == appleY) {
                 tailSize++;
                 appleX = Math.floor(Math.random() * gridSize);
@@ -115,14 +93,15 @@
                 document.getElementById("game-score").innerText = "Score: " + (tailSize - 3);
             }
 
-            // Clear canvas (transparency)
+            // CRITICAL: clearRect lets the background image show through
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw Snake
-            ctx.fillStyle = SNAKE_COLOUR;
+            // Draw Snake (with a small border for visibility)
+            ctx.fillStyle = "lime";
+            ctx.strokeStyle = "darkgreen";
             for (var i = 0; i < snakeTrail.length; i++) {
-                // We subtract 1-2 pixels to keep the grid lines visible between segments
-                ctx.fillRect(snakeTrail[i].x * tileSize + 1, snakeTrail[i].y * tileSize + 1, tileSize - 2, tileSize - 2);
+                ctx.fillRect(snakeTrail[i].x * tileSize, snakeTrail[i].y * tileSize, tileSize - 1, tileSize - 1);
+                ctx.strokeRect(snakeTrail[i].x * tileSize, snakeTrail[i].y * tileSize, tileSize - 1, tileSize - 1);
                 
                 if (snakeTrail[i].x == snakeX && snakeTrail[i].y == snakeY && gameActive && (nextX !== 0 || nextY !== 0)) {
                     gameOver();
@@ -134,17 +113,17 @@
                 snakeTrail.shift();
             }
 
-            // Draw Apple (Circles look better on grids!)
-            ctx.fillStyle = APPLE_COLOUR;
+            // Draw Apple
+            ctx.fillStyle = "red";
             ctx.beginPath();
-            ctx.arc((appleX * tileSize) + (tileSize/2), (appleY * tileSize) + (tileSize/2), (tileSize/2) - 2, 0, Math.PI * 2);
+            ctx.arc((appleX * tileSize) + 10, (appleY * tileSize) + 10, 8, 0, Math.PI * 2);
             ctx.fill();
         }
 
         function gameOver() {
             clearInterval(gameControl);
             gameActive = false;
-            document.getElementById("game-status").innerText = "GAME OVER - Press Space";
+            document.getElementById("game-status").innerText = "GAME OVER!";
             snakeX = 10; snakeY = 10;
             nextX = 0; nextY = 0;
             tailSize = 3;
@@ -158,12 +137,10 @@
                 case 68: if(nextX !== -1) { nextX = 1; nextY = 0; } break; // D
                 case 83: if(nextY !== -1) { nextX = 0; nextY = 1; } break; // S
                 case 32: // Space
-                    if(gameActive) {
-                        clearInterval(gameControl);
-                        gameActive = false;
-                        document.getElementById("game-status").innerText = "PAUSED";
-                    } else {
-                        gameControl = startGame();
+                    if(!gameActive) {
+                        gameActive = true;
+                        document.getElementById("game-status").innerText = "RUNNING";
+                        gameControl = setInterval(draw, 1000 / speed);
                     }
                     break;
             }
