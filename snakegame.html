@@ -8,46 +8,53 @@
         body {
             background-color: #1a1a1a;
             color: white;
-            font-family: sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
             margin: 0;
+            overflow: hidden;
         }
 
-        /* The Box holding the game */
         .game-container {
             position: relative;
             width: 400px;
             height: 400px;
-            border: 5px solid #444;
-            /* WE ARE LOADING A WEB IMAGE TO ENSURE IT WORKS IMMEDIATELY */
+            border: 8px solid #333;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
             background-image: url('https://img.freepik.com/free-vector/pixel-art-grass-background_52683-122703.jpg');
-            background-size: 40px 40px; /* Aligned to 20px grid (2x2 tiles) */
-            background-repeat: repeat;
-            image-rendering: pixelated; /* Keeps the grass looking sharp */
+            background-size: 40px 40px;
+            image-rendering: pixelated;
         }
 
-        /* Essential: The canvas MUST be transparent to see the image */
         canvas {
             display: block;
-            background-color: transparent !important; 
         }
 
         .ui-panel {
             text-align: center;
-            margin-top: 15px;
+            margin-top: 20px;
+            background: rgba(0,0,0,0.3);
+            padding: 15px 30px;
+            border-radius: 15px;
         }
 
-        #game-status { color: lime; font-weight: bold; font-size: 20px; }
-        #game-score { color: yellow; font-size: 24px; }
+        #game-status { color: #00ff00; font-weight: bold; font-size: 22px; text-transform: uppercase; letter-spacing: 2px; }
+        #game-score { color: #ffff00; font-size: 28px; margin: 5px 0; font-family: monospace; }
+        kbd {
+            background: #444;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
 
-    <h3 style="color:lime; font-size: 40px; margin: 10px;">SNAKE GAME</h3>
+    <h3 style="color:lime; font-size: 42px; margin: 10px; text-shadow: 2px 2px #000;">SNAKE</h3>
 
     <div class="game-container">
         <canvas id="canvas" width="400" height="400"></canvas>
@@ -55,96 +62,129 @@
 
     <div class="ui-panel">
         <div id="game-status">Press SPACE to Start</div>
-        <div id="game-score">Score: 0</div>
-        <p>Use <b>WASD</b> to move</p>
+        <div id="game-score">000</div>
+        <p>Move: <kbd>WASD</kbd> or <kbd>ARROWS</kbd></p>
     </div>
 
     <script>
-        var canvas, ctx, gameControl, gameActive = false;
-        var speed = 10;
-        
-        var gridSize = 20, tileSize = 20; 
-        var nextX = 0, nextY = 0;
-        var tailSize = 3, snakeTrail = [];
-        var snakeX = 10, snakeY = 10;
-        var appleX = 15, appleY = 15;
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        const scoreElement = document.getElementById("game-score");
+        const statusElement = document.getElementById("game-status");
 
-        window.onload = function() {
-            canvas = document.getElementById("canvas");
-            ctx = canvas.getContext("2d");
-            document.addEventListener("keydown", keyDownEvent);
-            // Draw once to show apple on top of background
-            draw(); 
-        };
+        const gridSize = 20, tileSize = 20;
+        let speed = 10;
+        let gameControl, gameActive = false;
+
+        let snakeX = 10, snakeY = 10;
+        let nextX = 0, nextY = 0;
+        let currentX = 0, currentY = 0; // Tracks actual movement to prevent self-collision
+        let snakeTrail = [];
+        let tailSize = 3;
+        let appleX = 15, appleY = 15;
+
+        document.addEventListener("keydown", keyDownEvent);
 
         function draw() {
+            // Update direction
+            currentX = nextX;
+            currentY = nextY;
+            
             snakeX += nextX;
             snakeY += nextY;
 
+            // Screen Wrap
             if (snakeX < 0) snakeX = gridSize - 1;
             if (snakeX > gridSize - 1) snakeX = 0;
             if (snakeY < 0) snakeY = gridSize - 1;
             if (snakeY > gridSize - 1) snakeY = 0;
 
-            if (snakeX == appleX && snakeY == appleY) {
+            // Apple Collision
+            if (snakeX === appleX && snakeY === appleY) {
                 tailSize++;
-                appleX = Math.floor(Math.random() * gridSize);
-                appleY = Math.floor(Math.random() * gridSize);
-                document.getElementById("game-score").innerText = "Score: " + (tailSize - 3);
+                spawnApple();
+                scoreElement.innerText = (tailSize - 3).toString().padStart(3, '0');
             }
 
-            // CRITICAL: clearRect lets the background image show through
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw Snake (with a small border for visibility)
-            ctx.fillStyle = "lime";
-            ctx.strokeStyle = "darkgreen";
-            for (var i = 0; i < snakeTrail.length; i++) {
-                ctx.fillRect(snakeTrail[i].x * tileSize, snakeTrail[i].y * tileSize, tileSize - 1, tileSize - 1);
-                ctx.strokeRect(snakeTrail[i].x * tileSize, snakeTrail[i].y * tileSize, tileSize - 1, tileSize - 1);
+            // Draw Snake
+            snakeTrail.forEach((pos, index) => {
+                // Gradient effect: Head is brighter than tail
+                ctx.fillStyle = (index === snakeTrail.length - 1) ? "#fff" : "lime";
+                ctx.strokeStyle = "#004400";
                 
-                if (snakeTrail[i].x == snakeX && snakeTrail[i].y == snakeY && gameActive && (nextX !== 0 || nextY !== 0)) {
+                ctx.fillRect(pos.x * tileSize, pos.y * tileSize, tileSize - 1, tileSize - 1);
+                ctx.strokeRect(pos.x * tileSize, pos.y * tileSize, tileSize - 1, tileSize - 1);
+                
+                // Death Check
+                if (pos.x === snakeX && pos.y === snakeY && gameActive && (nextX !== 0 || nextY !== 0)) {
                     gameOver();
                 }
-            }
+            });
 
             snakeTrail.push({ x: snakeX, y: snakeY });
             while (snakeTrail.length > tailSize) {
                 snakeTrail.shift();
             }
 
-            // Draw Apple
+            // Draw Apple with Glow
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = "red";
             ctx.fillStyle = "red";
             ctx.beginPath();
             ctx.arc((appleX * tileSize) + 10, (appleY * tileSize) + 10, 8, 0, Math.PI * 2);
             ctx.fill();
+            ctx.shadowBlur = 0; // Reset shadow
+        }
+
+        function spawnApple() {
+            appleX = Math.floor(Math.random() * gridSize);
+            appleY = Math.floor(Math.random() * gridSize);
+            // Ensure apple doesn't spawn on snake body
+            snakeTrail.forEach(part => {
+                if(appleX === part.x && appleY === part.y) spawnApple();
+            });
         }
 
         function gameOver() {
             clearInterval(gameControl);
             gameActive = false;
-            document.getElementById("game-status").innerText = "GAME OVER!";
+            statusElement.innerText = "GAME OVER!";
+            statusElement.style.color = "red";
+        }
+
+        function resetGame() {
             snakeX = 10; snakeY = 10;
             nextX = 0; nextY = 0;
+            currentX = 0; currentY = 0;
             tailSize = 3;
             snakeTrail = [];
+            scoreElement.innerText = "000";
+            statusElement.innerText = "RUNNING";
+            statusElement.style.color = "lime";
+            gameActive = true;
+            gameControl = setInterval(draw, 1000 / speed);
         }
 
         function keyDownEvent(e) {
             switch (e.keyCode) {
-                case 65: if(nextX !== 1) { nextX = -1; nextY = 0; } break; // A
-                case 87: if(nextY !== 1) { nextX = 0; nextY = -1; } break; // W
-                case 68: if(nextX !== -1) { nextX = 1; nextY = 0; } break; // D
-                case 83: if(nextY !== -1) { nextX = 0; nextY = 1; } break; // S
+                case 37: case 65: // Left
+                    if(currentX !== 1) { nextX = -1; nextY = 0; } break;
+                case 38: case 87: // Up
+                    if(currentY !== 1) { nextX = 0; nextY = -1; } break;
+                case 39: case 68: // Right
+                    if(currentX !== -1) { nextX = 1; nextY = 0; } break;
+                case 40: case 83: // Down
+                    if(currentY !== -1) { nextX = 0; nextY = 1; } break;
                 case 32: // Space
-                    if(!gameActive) {
-                        gameActive = true;
-                        document.getElementById("game-status").innerText = "RUNNING";
-                        gameControl = setInterval(draw, 1000 / speed);
-                    }
+                    if(!gameActive) resetGame();
                     break;
             }
         }
+
+        // Initial render
+        draw();
     </script>
 </body>
 </html>
